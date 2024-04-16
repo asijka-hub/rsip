@@ -41,6 +41,14 @@ mod parser {
             Ok(Scheme::Tel)
         )
     }
+
+    #[test]
+    fn other() {
+        assert_eq!(
+            Tokenizer::from("sips:2222".as_bytes()).try_into(),
+            Ok(Scheme::Other(String::from("sips:2222")))
+        )
+    }
 }
 
 mod tokenizer {

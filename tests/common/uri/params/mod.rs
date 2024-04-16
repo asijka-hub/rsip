@@ -2,6 +2,7 @@ use rsip::common::uri::param::{Maddr, Param, Tokenizer};
 use std::convert::TryInto;
 
 mod display {
+    use rsip::param::{OtherParam, OtherParamValue};
     use super::*;
 
     #[test]
@@ -14,6 +15,8 @@ mod display {
 }
 
 mod parser {
+    use std::convert::TryFrom;
+    use rsip::param::{OtherParam, OtherParamValue};
     use super::*;
 
     #[test]
@@ -31,6 +34,46 @@ mod parser {
             Ok(Param::Other("maddr".into(), None))
         );
     }
+
+    #[test]
+    fn other1() {
+        assert_eq!(
+            Tokenizer::from(("param".as_bytes(), Some("dupa".as_bytes()))).try_into(),
+            Ok(Param::Other(OtherParam::new("param"), Some(OtherParamValue::new("dupa"))))
+        );
+    }
+
+    #[test]
+    fn other2() {
+        assert_eq!(
+            Param::try_from(Tokenizer::tokenize(";param=dupa".as_bytes()).unwrap().1).unwrap().to_string(),
+            ";param=dupa"
+        );
+    }
+
+    #[test]
+    fn other3() {
+        assert_eq!(
+            Param::try_from(Tokenizer::tokenize(";param=//dupa".as_bytes()).unwrap().1).unwrap().to_string(),
+            ";param=//dupa"
+        );
+    }
+
+    #[test]
+    fn other4() {
+        assert_eq!(
+            Param::try_from(Tokenizer::tokenize(";param=[dupa]".as_bytes()).unwrap().1).unwrap().to_string(),
+            ";param=[dupa]"
+        );
+    }
+
+    #[test]
+    fn other5() {
+        assert_eq!(
+            Param::try_from(Tokenizer::tokenize(";param=%[dupa]".as_bytes()).unwrap().1).unwrap().to_string(),
+            ";param=%[dupa]"
+        );
+    }
 }
 
 mod tokenizer {
@@ -43,6 +86,17 @@ mod tokenizer {
             Ok((
                 ";something".as_bytes(),
                 ("maddr".as_bytes(), Some("255.255.255.255".as_bytes())).into()
+            )),
+        );
+    }
+
+    #[test]
+    fn tokenizer1_u8_2() {
+        assert_eq!(
+            Tokenizer::tokenize(";maddr=//[255.255.255.255];something".as_bytes()),
+            Ok((
+                ";something".as_bytes(),
+                ("maddr".as_bytes(), Some("//[255.255.255.255]".as_bytes())).into()
             )),
         );
     }

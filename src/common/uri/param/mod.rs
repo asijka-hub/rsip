@@ -175,7 +175,8 @@ pub mod tokenizer {
                         tag("="),
                         alt((
                             recognize(delimited(tag("\""), take_until("\""), tag("\""))),
-                            take_while(I::is_token),
+                            // take_while(I::is_token),
+                            take_while(|c: I| return "[]/:&+$".contains(c.clone().as_char()) || I::is_token(c)),
                         )),
                     )),
                     |t| t.1,

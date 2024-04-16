@@ -249,10 +249,17 @@ pub mod tokenizer {
         pub fn tokenize(part: T) -> GResult<T, Self> {
             use nom::{combinator::opt, multi::many0};
 
+
             let (rem, scheme) = opt(scheme::Tokenizer::tokenize)(part)?;
+            println!("{:#?}", rem.into());
+            println!("{:#?}", scheme.clone().unwrap().value.into());
             let (rem, auth) = opt(auth::Tokenizer::tokenize)(rem)?;
+            println!("{:#?}", rem.into());
             let (rem, host_with_port) = host_with_port::Tokenizer::tokenize(rem)?;
+            println!("{:#?}", rem.into());
             let (rem, params) = many0(param::Tokenizer::tokenize)(rem)?;
+            println!("{:#?}", rem.into());
+
 
             Ok((
                 rem,
