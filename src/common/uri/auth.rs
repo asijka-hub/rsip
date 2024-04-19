@@ -100,7 +100,8 @@ pub mod tokenizer {
             };
 
             let (rem, (auth, _)) = tuple((
-                take_till(|c| c == Into::<I>::into(b'.') || c == Into::<I>::into(b'@')),
+                // take_till(|c| c == Into::<I>::into(b'.') || c == Into::<I>::into(b'@')), //TODO why was dot here
+                take_till(|c|  c == Into::<I>::into(b'@')),
                 tag("@"),
             ))(part)
             .map_err(|_: GenericNomError<'a, T>| {

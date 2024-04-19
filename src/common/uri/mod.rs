@@ -251,14 +251,24 @@ pub mod tokenizer {
 
 
             let (rem, scheme) = opt(scheme::Tokenizer::tokenize)(part)?;
-            println!("{:#?}", rem.into());
-            println!("{:#?}", scheme.clone().unwrap().value.into());
+            match scheme {
+                None => {println!("auth is None")}
+                Some(_) => {println!("user: {}", scheme.clone().unwrap().value.into())}
+            }
             let (rem, auth) = opt(auth::Tokenizer::tokenize)(rem)?;
-            println!("{:#?}", rem.into());
+            match auth {
+                None => {println!("auth is None")}
+                Some(_) => {println!("user: {}", auth.clone().unwrap().user.into())}
+            }
+            // println!("{:#?}", rem.clone().into());
             let (rem, host_with_port) = host_with_port::Tokenizer::tokenize(rem)?;
-            println!("{:#?}", rem.into());
+            println!("host: {}", host_with_port.clone().host.into());
+            match host_with_port.port {
+                None => {println!("port is None")}
+                Some(_) => {println!("port: {}", host_with_port.clone().port.unwrap().into())}
+            }
             let (rem, params) = many0(param::Tokenizer::tokenize)(rem)?;
-            println!("{:#?}", rem.into());
+            // println!("{:#?}", rem.clone().into());
 
 
             Ok((
