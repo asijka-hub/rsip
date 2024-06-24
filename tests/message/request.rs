@@ -232,6 +232,43 @@ mod parser {
     }
 
     #[test]
+    fn parser22() {
+        assert_eq!(
+            Request::try_from(
+                concat!(
+                    "REGISTER sips:ss2.biloxi.example.com SIP/2.0\r\n",
+                    "Via: SIP/2.0/TLS client.biloxi.example.com:5061;branch=z9hG4bKnashd92\r\n",
+                    "Max-Forwards: 70\r\n",
+                    "Call-ID: 1j9FpLxk3uxtm8tn@biloxi.example.com\r\n",
+                    "CSeq: 2 REGISTER\r\n",
+                    "\r\n"
+                ).as_bytes()
+            ),
+            Ok(Request {
+                method: common::method::Method::Register,
+                uri: uri::Uri {
+                    scheme: Some(uri::scheme::Scheme::Sips),
+                    auth: None,
+                    host_with_port: uri::HostWithPort {
+                        host: uri::Host::Domain("ss2.biloxi.example.com".into()),
+                        port: None
+                    },
+                    params: vec![],
+                    headers: vec![].into()
+                },
+                version: common::version::Version::V2,
+                headers: vec![
+                    Via::new("SIP/2.0/TLS client.biloxi.example.com:5061;branch=z9hG4bKnashd92").into(),
+                    MaxForwards::new("70").into(),
+                    CallId::new("1j9FpLxk3uxtm8tn@biloxi.example.com").into(),
+                    CSeq::new("2 REGISTER").into(),
+                ].into(),
+                body: vec![]
+            }),
+        );
+    }
+
+    #[test]
     fn parser3() {
         assert_eq!(
             Request::try_from(
@@ -283,6 +320,102 @@ mod parser {
             }),
         );
     }
+
+    #[test]
+    fn parser_invite69() {
+        assert_eq!(
+        Request::try_from(
+            concat!(
+                "INVITE tel:+48726152320 SIP/2.0\r\n",
+                "Via: SIP/2.0/UDP 10.219.107.132:5060;oc-node=201;rport;branch=z9hG4bKnOyUNBV_Tx590bfn7ambmw;ext, SIP/2.0/UDP 10.219.18.145:5092;branch=z9hG4bK_IMSCL1851327.000_d348fd304b649a8e7299d10343529720;lskpmc=SLP;oc;oc-algo=\"loss\"\r\n",
+                "Via: SIP/2.0/TCP 10.219.38.139:5081;branch=z9hG4bK_IMSCL1851327.000_d19111895537e766f3e96c9c5049bc8c;lskpmc=IPF\r\n",
+                "Via: SIP/2.0/SCTP 10.219.37.178:5060;branch=z9hG4bK.ejdAfU3iWg9bdY6;yop=00.00.B653B430.0000.7007\r\n",
+                "Record-Route: <sip:10.224.131.27:5060;oc-node=201;lr>, <sip:10.219.107.132:5060;oc-node=201;lr>, <sip:isc@scscf011wa4.cscf.ims.mnc001.mcc260.3gppnetwork.org:5092;routing_id=e26463d0738f5284b5f15e3e8a6d3a43;lskpmc=SLP;lr;interface=bcc>, <sip:AAQACB8dwAADrAAAA5gAAfDcK@10.219.37.178:5060;yop=00.00.B653B430.0000.7007;transport=SCTP;lr>\r\n",
+                "Content-Length: 587\r\n",
+                "From: <tel:+48795993001>;tag=VDVA1AA.AaZ702c5\r\n",
+                "To: <tel:+48726152320>\r\n",
+                "Call-ID: 9C51560C19537BED75C70297@0770ffffffff\r\n",
+                "CSeq: 1 INVITE\r\n",
+                "Max-Forwards: 59\r\n",
+                "Contact: <sip:7007@10.219.37.178:5060;transport=SCTP;yop=00.00.B653B430.0000.7007>\r\n",
+                "Supported: 100rel,precondition,timer,norefersub\r\n",
+                "Allow: ACK,BYE,CANCEL,INFO,INVITE,NOTIFY,OPTIONS,PRACK,REFER,UPDATE\r\n",
+                "\r\n",
+                "a simple body\r\n",
+                "and some complex: characters\r\n",
+                "Ok?"
+            ).as_bytes()
+        ),
+        Ok(Request {
+            method: common::method::Method::Invite,
+            uri: uri::Uri {
+                scheme: Some(uri::scheme::Scheme::Tel),
+                auth: None,
+                host_with_port: uri::HostWithPort {
+                    host: uri::Host::Domain("tel:+48726152320".into()),
+                    port: None
+                },
+                params: vec![],
+                headers: vec![].into()
+            },
+            version: common::version::Version::V2,
+            headers: vec![
+                Via::new("SIP/2.0/UDP 10.219.107.132:5060;oc-node=201;rport;branch=z9hG4bKnOyUNBV_Tx590bfn7ambmw;ext, SIP/2.0/UDP 10.219.18.145:5092;branch=z9hG4bK_IMSCL1851327.000_d348fd304b649a8e7299d10343529720;lskpmc=SLP;oc;oc-algo=\"loss\"").into(),
+                Via::new("SIP/2.0/TCP 10.219.38.139:5081;branch=z9hG4bK_IMSCL1851327.000_d19111895537e766f3e96c9c5049bc8c;lskpmc=IPF").into(),
+                Via::new("SIP/2.0/SCTP 10.219.37.178:5060;branch=z9hG4bK.ejdAfU3iWg9bdY6;yop=00.00.B653B430.0000.7007").into(),
+                RecordRoute::new("<sip:10.224.131.27:5060;oc-node=201;lr>").into(),
+                RecordRoute::new("<sip:10.219.107.132:5060;oc-node=201;lr>").into(),
+                RecordRoute::new("<sip:isc@scscf011wa4.cscf.ims.mnc001.mcc260.3gppnetwork.org:5092;routing_id=e26463d0738f5284b5f15e3e8a6d3a43;lskpmc=SLP;lr;interface=bcc>").into(),
+                RecordRoute::new("<sip:AAQACB8dwAADrAAAA5gAAfDcK@10.219.37.178:5060;yop=00.00.B653B430.0000.7007;transport=SCTP;lr>").into(),
+                ContentLength::new("587").into(),
+                From::new("<tel:+48795993001>;tag=VDVA1AA.AaZ702c5").into(),
+                To::new("<tel:+48726152320>").into(),
+                CallId::new("9C51560C19537BED75C70297@0770ffffffff").into(),
+                CSeq::new("1 INVITE").into(),
+                MaxForwards::new("59").into(),
+                Contact::new("<sip:7007@10.219.37.178:5060;transport=SCTP;yop=00.00.B653B430.0000.7007>").into(),
+                Supported::new("100rel,precondition,timer,norefersub").into(),
+                Allow::new("ACK,BYE,CANCEL,INFO,INVITE,NOTIFY,OPTIONS,PRACK,REFER,UPDATE").into(),
+            ].into(),
+            body: concat!(
+                "a simple body\r\n",
+                "and some complex: characters\r\n",
+                "Ok?"
+            ).as_bytes().to_vec()
+        }),
+    );
+    }
+
+
+    #[test]
+    fn parser_invite7() {
+        assert_eq!(
+        Request::try_from(
+            concat!(
+                "INVITE tel:+48726152320 SIP/2.0\r\n\r\n",
+            ).as_bytes()
+        ),
+        Ok(Request {
+            method: common::method::Method::Invite,
+            uri: uri::Uri {
+                scheme: Some(uri::scheme::Scheme::Tel),
+                auth: None,
+                host_with_port: uri::HostWithPort {
+                    host: uri::Host::Domain("+48726152320".into()),
+                    port: None
+                },
+                params: vec![],
+                headers: vec![].into()
+            },
+            version: common::version::Version::V2,
+            headers: vec![
+            ].into(),
+            body: concat!("").as_bytes().to_vec()
+        }),
+    );
+    }
+
+
 
     #[test]
     fn parser4() {

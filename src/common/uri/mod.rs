@@ -221,7 +221,7 @@ impl<'a> std::convert::TryFrom<tokenizer::Tokenizer<'a, &'a [u8], u8>> for Uri {
 #[doc(hidden)]
 pub mod tokenizer {
     use super::{auth, host_with_port, param, scheme};
-    use crate::{AbstractInput, AbstractInputItem, GResult, TokenizerError};
+    use crate::{AbstractInput, AbstractInputItem, GResult, TokenizerError, uri};
     use std::marker::PhantomData;
 
     #[derive(Debug, PartialEq, Eq, Clone, Default)]
@@ -260,7 +260,6 @@ pub mod tokenizer {
                 None => {println!("auth is None")}
                 Some(_) => {println!("user: {}", auth.clone().unwrap().user.into())}
             }
-            // println!("{:#?}", rem.clone().into());
             let (rem, host_with_port) = host_with_port::Tokenizer::tokenize(rem)?;
             println!("host: {}", host_with_port.clone().host.into());
             match host_with_port.port {
@@ -268,7 +267,9 @@ pub mod tokenizer {
                 Some(_) => {println!("port: {}", host_with_port.clone().port.unwrap().into())}
             }
             let (rem, params) = many0(param::Tokenizer::tokenize)(rem)?;
-            // println!("{:#?}", rem.clone().into());
+            // for t in params.clone() {
+            //     println!("param name: {}, value: {}", t.name.into(), t.value.unwrap().into());
+            // }
 
 
             Ok((

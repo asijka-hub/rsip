@@ -85,6 +85,14 @@ mod whole {
             String::from("sip:2222;phone-context=unknown;voicexml=http%3A//10.220.90.229%3A8080/web-ivr-api-1.0/vxml/Dostepgoscia_pojedynczy_48514748636.vxml@10.219.12.179:5060;user=phone;transport=SCTP;yop=00.00.D23F7134.0000.7015")
         );
     }
+
+    #[test]
+    fn error1() {
+        assert_eq!(
+            Uri::try_from("sip:2222;phone-context=unknown;voicexml=http%3A//10.220.90.229%3A8080/web-ivr-api-1.0/vxml/Dostepgoscia_pojedynczy_48514748636.vxml@10.219.12.179:5060;user=phone;transport=SCTP;yop=00.00.D23F7134.0000.7015").unwrap().to_string(),
+            String::from("sip:2222;phone-context=unknown;voicexml=http%3A//10.220.90.229%3A8080/web-ivr-api-1.0/vxml/Dostepgoscia_pojedynczy_48514748636.vxml@10.219.12.179:5060;user=phone;transport=SCTP;yop=00.00.D23F7134.0000.7015")
+        );
+    }
 }
 
 mod display {
