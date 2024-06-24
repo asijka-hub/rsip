@@ -351,6 +351,7 @@ mod parser {
 }
 
 mod tokenizer {
+    use rsip::Scheme::Sip;
     use super::*;
 
     #[test]
@@ -381,6 +382,118 @@ mod tokenizer {
                     scheme: None,
                     auth: None,
                     host_with_port: ("server2.com", None).into(),
+                    params: vec![],
+                    headers: None,
+                    ..Default::default()
+                }
+            )),
+        );
+    }
+
+    #[test]
+    fn tokenizer_str_rfc_1913_1() {
+        assert_eq!(
+            Tokenizer::tokenize("sip:alice@atlanta.com something"),
+            Ok((
+                " something",
+                Tokenizer {
+                    scheme: Some("sip".into()).into(),
+                    auth: Some(("alice", None).into()).into(),
+                    host_with_port: ("atlanta.com", None).into(),
+                    params: vec![],
+                    headers: None,
+                    ..Default::default()
+                }
+            )),
+        );
+    }
+
+    #[test]
+    fn tokenizer_str_rfc_1913_2() {
+        assert_eq!(
+            Tokenizer::tokenize("sip:alice:secretword@atlanta.com;transport=tcp something"),
+            Ok((
+                " something",
+                Tokenizer {
+                    scheme: Some("sip".into()).into(),
+                    auth: Some(("alice", Some("secretword").into()).into()).into(),
+                    host_with_port: ("atlanta.com", None).into(),
+                    params: vec![
+                        ("transport", Some("tcp").into()).into()
+                    ],
+                    headers: None,
+                    ..Default::default()
+                }
+            )),
+        );
+    }
+
+    #[test]
+    fn tokenizer_str_rfc_1913_5() {
+        assert_eq!(
+            Tokenizer::tokenize("sips:1212@gateway.com something"),
+            Ok((
+                " something",
+                Tokenizer {
+                    scheme: Some("sips".into()).into(),
+                    auth: Some(("1212", None).into()).into(),
+                    host_with_port: ("gateway.com", None).into(),
+                    params: vec![],
+                    headers: None,
+                    ..Default::default()
+                }
+            )),
+        );
+    }
+
+    #[test]
+    fn tokenizer_str_rfc_1913_6() {
+        assert_eq!(
+            Tokenizer::tokenize("sip:alice@192.0.2.4 something"),
+            Ok((
+                " something",
+                Tokenizer {
+                    scheme: Some("sip".into()).into(),
+                    auth: Some(("alice", None).into()).into(),
+                    host_with_port: ("192.0.2.4", None).into(),
+                    params: vec![],
+                    headers: None,
+                    ..Default::default()
+                }
+            )),
+        );
+    }
+
+    #[test]
+    fn tokenizer_str_rfc_1913_7() {
+        assert_eq!(
+            Tokenizer::tokenize("sip:atlanta.com;method=REGISTER something"),
+            Ok((
+                " something",
+                Tokenizer {
+                    scheme: Some("sip".into()).into(),
+                    auth: None,
+                    host_with_port: ("atlanta.com", None).into(),
+                    params: vec![
+                        ("method", Some("REGISTER").into()).into()
+                    ],
+                    headers: None,
+                    ..Default::default()
+                }
+            )),
+        );
+    }
+
+    #[test]
+    fn tokenizer_str_rfc_1913_8() {
+        assert_eq!(
+            Tokenizer::tokenize("sip:alice;day=tuesday@atlanta.com something"),
+            Ok((
+                " something",
+                Tokenizer {
+                    scheme: Some("sip".into()).into(),
+                    auth: Some(("alice;day=tuesday", None).into()).into(),
+                    host_with_port: ("atlanta.com", None).into(),
                     params: vec![],
                     headers: None,
                     ..Default::default()
@@ -663,6 +776,20 @@ mod tokenizer {
                     ..Default::default()
                 }
             )),
+        );
+    }
+}
+
+mod uri_comparison {
+    use std::convert::TryFrom;
+    use rsip::Scheme::Sip;
+    use super::*;
+
+    #[test]
+    fn rfc1() {
+        assert_eq!(
+            Uri::try_from("sip:%61lice@atlanta.com;transport=TCP something"),
+            Uri::try_from("sip:alice@AtLanTa.CoM;Transport=tcp something"),
         );
     }
 }

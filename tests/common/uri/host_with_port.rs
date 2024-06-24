@@ -76,6 +76,15 @@ mod tokenizer {
             Ok((" something", ("server2.com", None).into())),
         );
     }
+    #[test]
+    fn tokenizer1_str2() {
+        // what to do if : is present but port is not specified
+        // according to the rfc, at least on number should be present
+        assert_eq!(
+            Tokenizer::tokenize("server2.com: something"),
+            Ok((" something", ("server2.com", Some("")).into())),
+        );
+    }
 
     #[test]
     fn tokenizer2_u8() {

@@ -253,7 +253,7 @@ pub mod tokenizer {
             let (rem, scheme) = opt(scheme::Tokenizer::tokenize)(part)?;
             match scheme {
                 None => {println!("auth is None")}
-                Some(_) => {println!("user: {}", scheme.clone().unwrap().value.into())}
+                Some(_) => {println!("scheme: {}", scheme.clone().unwrap().value.into())}
             }
             let (rem, auth) = opt(auth::Tokenizer::tokenize)(rem)?;
             match auth {
